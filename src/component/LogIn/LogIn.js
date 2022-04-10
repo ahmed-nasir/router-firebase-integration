@@ -1,12 +1,26 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import useFirebase from '../../hooks/useFirebase';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSignInWithGoogle } from 'react-firebase-hooks/auth'
+import { getAuth } from 'firebase/auth';
+import app from '../../firbase.init';
+
+const auth = getAuth(app)
 
 const LogIn = () => {
-    const {signInWithGoogle}= useFirebase()
+    const [signInWithGoogle, user] = useSignInWithGoogle(auth)
+
+    const location= useLocation();
+    const navigate = useNavigate();
+    const from = location?.state?.from?.pathname || '/'
+    const handleGoogleSignIn = () => {
+        signInWithGoogle()
+            .then(() => {
+                navigate(from,{replace:true});
+            })
+    }
     return (
         <div>
-            
+
             <div className='text-4xl font-semibold pt-10 text-center'>
                 <h1>Please login</h1>
             </div>
@@ -36,9 +50,9 @@ const LogIn = () => {
                             </Link>
                         </div>
                     </form>
-                        <div className=''>
-                            <button onClick={()=>signInWithGoogle()}  className=' text-white p-1 rounded-md bg-blue-500'>Google sign in</button>
-                        </div>
+                    <div className=''>
+                        <button onClick={handleGoogleSignIn} className=' text-white p-1 rounded-md bg-blue-500'>Google sign in</button>
+                    </div>
                 </div>
             </div>
         </div>
